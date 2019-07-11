@@ -1,24 +1,25 @@
 if [ ! -d /app/.heroku/miniconda ]; then
-    puts-step "Preparing Python/Miniconda Environment (3.5.2)"
-    wget --quiet http://repo.continuum.io/miniconda/Miniconda-3.7.3-Linux-x86_64.sh
-    bash Miniconda-3.7.3-Linux-x86_64.sh  -p /app/.heroku/miniconda/ -b | indent
-    rm -fr Miniconda-3.7.3-Linux-x86_64.sh
+    puts-step "Preparing Python/Miniconda Environment (4.6.14)"
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh | indent
+    chmod +x Miniconda3-4.6.14-Linux-x86_64.sh | indent
+    ./Miniconda3-4.6.14-Linux-x86_64.sh  -p /app/.heroku/miniconda/ -b | indent
+    rm -rf Miniconda3-4.6.14-Linux-x86_64.sh | indent
 fi
 
 if [ -f .python-version ]; then
-    conda create --yes --name custom_python_version python=`cat .python-version | sed -E "s/([0-9]+)\.([0-9]+).*/\1.\2/"`
-    source activate custom_python_version
+    conda create --yes --name custom_python_version python=`cat .python-version | sed -E "s/([0-9]+)\.([0-9]+).*/\1.\2/"` | indent
+    source activate custom_python_version | indent
 fi
 
 if which pip; then
-    echo "pip is already installed, skipping installing it via conda"
+    echo "pip is already installed, skipping installing it via conda" | indent
 else
     conda install pip --yes | indent
 fi
 
 if [ -f conda-requirements.txt ]; then
     puts-step "Installing dependencies using Conda"
-    conda install --no-deps --file conda-requirements.txt --yes | indent
+    conda install --file conda-requirements.txt --yes | indent
 fi
 
 if [ -f requirements.txt ]; then
@@ -28,3 +29,4 @@ fi
 
 # Clean up the installation environment .
 conda clean -pt --yes > /dev/null
+
