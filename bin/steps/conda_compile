@@ -3,10 +3,18 @@ if [ ! -d /app/.heroku/miniconda ]; then
     curl -Os http://repo.continuum.io/miniconda/Miniconda-3.7.3-Linux-x86_64.sh
     bash Miniconda-3.7.3-Linux-x86_64.sh  -p /app/.heroku/miniconda/ -b | indent
     rm -fr Miniconda-3.7.3-Linux-x86_64.sh
-
-    conda install pip --yes | indent
 fi
 
+if [ -f .python-version ]; then
+    conda create --yes --name custom_python_version python=`cat .python-version | sed -E "s/([0-9]+)\.([0-9]+).*/\1.\2/"`
+    source activate custom_python_version
+fi
+
+if which pip; then
+    echo "pip is already installed, skipping installing it via conda"
+else
+    conda install pip --yes | indent
+fi
 
 if [ -f conda-requirements.txt ]; then
     puts-step "Installing dependencies using Conda"
